@@ -1,1 +1,84 @@
+name: Publish Fibonacci to NuGet
 
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+      # Vérification du code
+      - uses: actions/checkout@v4
+      
+      # Configuration de .NET
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 8.0.x  # Assurez-vous que c'est la bonne version de .NET
+      
+      # Exécution des tests unitaires
+      - name: Run Unit test
+        working-directory: ./tests/Leonardo.Tests
+        run: dotnet test /p:CollectCoverage=true /p:CoverletOutputFormat=opencover /p:CoverletOutput=./coverage/opencover.xml
+      
+      # Publication du projet
+      - run: dotnet publish ./src/Leonardo.Web/Leonardo.Web.csproj --self-contained true --output ./win-x64/fibonacci -c Release -r win-x64 /p:PublishSingleFile=true /p:PublishTrimmed=true /p:PublishReadyToRun=true
+      
+      # Téléchargement de l'artefact publié
+      - name: Upload WebApp Build Artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: Publish win-x64 Fibonacci
+          path: ./win-x64/fibonacci
+
+  # Tagging et versioning
+  tags:
+    runs-on: ubuntu-latest
+    outputs:
+      new_version: ${{ steps.tag.outputs.new_version }}
+    steps:
+      # Vérification du code
+      - uses: actions/checkout@v4
+
+      # Génération du nouveau tag de version
+      - name: Bump version and push tag
+        id: tag_version
+        if: github.ref == 'refs/heads/main'
+        uses: mathieudutour/github-tag-action@v6.0
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+
+      # Ajout du tag à l'output
+      - name: Add tag to output step for main branch
+        id: tag
+        run: |
+          if [ '${{ github.ref }}' = 'refs/heads/main' ]; then
+            echo "new_version=${{ steps.tag_version.outputs.new_version }}" >> $GITHUB_OUTPUT
+          else
+            echo "new_version=pr-${{ github.event.number }}-${{ github.run_number }}" >> $GITHUB_OUTPUT
+
+  # Publication sur NuGet
+  publish:
+    runs-on: ubuntu-latest
+    needs: [build, tags]  # Ce job dépend du job build et tags
+    steps:
+      # Vérification du code
+      - uses: actions/checkout@v4
+
+      # Créer le package NuGet avec la version
+      - name: Publish Fibonacci to NuGet
+        working-directory: ./src/Leonardo
+        if: github.ref == 'refs/heads/main'  # Cette étape ne s'exécute que si on pousse sur la branche `main`
+        run: |
+          dotnet pack ./src/Leonardo/Leonardo.csproj -p:PackageVersion=${{ needs.tags.outputs.new_version }}
+          dotnet nuget push ./src/Leonardo/bin/Release/Benjamin.Trolais.Fibonacci.${{ needs.tags.outputs.new_version }}.nupkg --api-key ${{ secrets.NUGET_API_KEY }} --source https://api.nuget.org/v3/index.json
+
+permissions:
+  id-token: write
+  contents: write
+  packages: write
