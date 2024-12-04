@@ -2,13 +2,13 @@ using Leonardo;
 
 var builder = WebApplication.CreateBuilder(args);
 builder.Environment.EnvironmentName = "Development";
-
 var app = builder.Build();
 
-app.MapGet("/Fibonacci", async (int n) =>
+app.MapGet("/Fibonacci", () =>
 {
+    var n = 10;
     var fibonacci = new Fibonacci();
-    return Results.Ok(fibonacci.GetFibonacciNumber(n));
+    return fibonacci.GetFibonacciNumber(n).ToString(); 
 });
 
 app.Run();

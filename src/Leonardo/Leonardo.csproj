@@ -5,13 +5,6 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
     <PackageId>Benjamin.Trolais.Fibonacci</PackageId>
-    <Version>1.0.0</Version>
-    <Authors>Benj Trls</Authors>
-    <Description>Fibonacci NuGet Package</Description>
-    <PackageTags>fibonacci, example</PackageTags>
-    <PackageLicenseUrl>https://opensource.org/licenses/MIT</PackageLicenseUrl>
-    <PackageProjectUrl>https://github.com/benjamin-trolais/Dotnet-first-project</PackageProjectUrl>
-    <RepositoryUrl>https://www.nuget.org/packages/Benjamin.Trolais.Fibonacci</RepositoryUrl>
   </PropertyGroup>
 
 </Project>
