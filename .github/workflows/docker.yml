@@ -1,4 +1,4 @@
-name: Docker Build and Push to GHCR
+name: Docker Build and Push to GHCR & Azure
 
 on:
   push:
@@ -38,7 +38,7 @@ jobs:
 
       - name: Deploy Container to Azure
         run: |
-          az group create --name BenjFibonacci --location northeurope
+          az group create --name BenjFibonacci --location westeurope
           az container create \
             -g BenjFibonacci \
             --name benjapp \
