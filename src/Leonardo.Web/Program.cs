@@ -2,6 +2,7 @@ using Leonardo;
 
 var builder = WebApplication.CreateBuilder(args);
 builder.Environment.EnvironmentName = "Development";
+builder.WebHost.UseUrls("http://*:8080");
 var app = builder.Build();
 
 app.MapGet("/Fibonacci", () =>
