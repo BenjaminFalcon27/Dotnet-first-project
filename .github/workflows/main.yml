@@ -76,8 +76,8 @@ jobs:
         working-directory: ./src/Leonardo
         if: github.ref == 'refs/heads/main'  # Cette étape ne s'exécute que si on pousse sur la branche `main`
         run: |
-          dotnet pack ./src/Leonardo/Leonardo.csproj -p:PackageVersion=${{ needs.tags.outputs.new_version }}
-          dotnet nuget push ./src/Leonardo/bin/Release/Benjamin.Trolais.Fibonacci.${{ needs.tags.outputs.new_version }}.nupkg --api-key ${{ secrets.NUGET_API_KEY }} --source https://api.nuget.org/v3/index.json
+          dotnet pack ./Leonardo.csproj -p:PackageVersion=${{ needs.tags.outputs.new_version }}
+          dotnet nuget push ./bin/Release/Benjamin.Trolais.Fibonacci.${{ needs.tags.outputs.new_version }}.nupkg --api-key ${{ secrets.NUGET_API_KEY }} --source https://api.nuget.org/v3/index.json
 
 permissions:
   id-token: write
