@@ -27,25 +27,25 @@ jobs:
         push: true
         tags: ghcr.io/benjaminfalcon27/dotnet-first-project:latest
         
-    deploy_azure:
-      needs: build_and_push
-      runs-on: ubuntu-latest
-      steps:
-        - name: Azure Login
-          uses: azure/login@v1
-          with:
-            creds: ${{ secrets.AZURE_CREDENTIALS }}
-  
-        - name: Deploy Container to Azure
-          run: |
-            az group create --name BenjFibonacci --location northeurope
-            az container create \
-              -g BenjFibonacci \
-              --name benjapp \
-              --dns-name-label fibo-trolais \
-              --image ghcr.io/benjaminfalcon27/dotnet-first-project:latest \
-              --environment-variables "ASPNETCORE_URLS=http://*:8080" \
-              --ports 8080 \
-              --os-type Linux \
-              --cpu 1 \
-              --memory 1
+  deploy_azure:
+    needs: build-and-push
+    runs-on: ubuntu-latest
+    steps:
+      - name: Azure Login
+        uses: azure/login@v1
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+      - name: Deploy Container to Azure
+        run: |
+          az group create --name BenjFibonacci --location northeurope
+          az container create \
+            -g BenjFibonacci \
+            --name benjapp \
+            --dns-name-label fibo-trolais \
+            --image ghcr.io/benjaminfalcon27/dotnet-first-project:latest \
+            --environment-variables "ASPNETCORE_URLS=http://*:8080" \
+            --ports 8080 \
+            --os-type Linux \
+            --cpu 1 \
+            --memory 1
